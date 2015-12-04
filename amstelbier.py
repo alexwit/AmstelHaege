@@ -1,14 +1,16 @@
 import Tkinter
 import random
 import math
+import sys
+import numpy
+import matplotlib.pyplot as plot
 
-random.seed(0)
 
 perceel = []
 
 window = Tkinter.Tk()
 
-houses = []
+
 
 
 window.title("Houses")
@@ -37,7 +39,6 @@ width3 = 42
 free3 = 24
 color3 = "red"
 
-Canvas = Tkinter.Canvas(window, width = 600, height = 640)
 
 class position:
     def __init__(self):
@@ -79,7 +80,7 @@ class House:
     def getX2(self):
         return self.pos.x1 + self.width       
 
-    def createHouse(self):
+    def createHouse(self, Canvas):
         Canvas.create_rectangle(self.pos.x1 - self.free,\
             self.pos.y1 - self.free, self.pos.x1 + self.width + self.free, self.pos.y1 + self.height + self.free, fill=self.color, stipple="gray12")
         Canvas.create_rectangle(self.pos.x1, self.pos.y1, self.pos.x1 + self.width, self.pos.y1 + self.height, fill=self.color)
@@ -170,9 +171,9 @@ class House:
         distances.append(distanceTop)
         distances.append(distanceBottom)            
 
-        min(distances)            
-        return min(distances)
-        #self.mindistance = min(distances)    
+        #print math.floor(min(distances))         
+        return math.floor(min(distances))
+        #self.mindistance = min(distances) 
         
        
               
@@ -206,6 +207,8 @@ class House:
             
 def runSimulation(widthmap,heightmap):
     
+    houses = []
+    
     k= 0
     while len(houses) < 12:
         
@@ -217,7 +220,7 @@ def runSimulation(widthmap,heightmap):
            j=1 
         
         else:
-            house.createHouse()
+            #house.createHouse()
             houses.append(house)
             #house.distance(houses)
 #        
@@ -238,7 +241,7 @@ def runSimulation(widthmap,heightmap):
             j = 1
         
         else:
-            smallHouse.createHouse()
+            #smallHouse.createHouse()
             houses.append(smallHouse)
             #smallHouse.distance(houses)  
             # houseLoc.append(house.pos, house))
@@ -254,48 +257,74 @@ def runSimulation(widthmap,heightmap):
             j = 1
         
         else:
-            bigHouse.createHouse()
+            #bigHouse.createHouse()
             houses.append(bigHouse)
             #bigHouse.distance(houses)  
             # houseLoc.append(house.pos, house))
                 
     totalValue = 0             
     for element in houses:
-        print "house" + str(i)
+        #print "house" + str(i)
         #element.distance(houses)
-        print element.getValue(houses)
+        #print element.getValue(houses)
         totalValue += element.getValue(houses)
         i += 1 
 
-    print totalValue
+    return houses, totalValue
 
-   
-    
-runSimulation(10, 10)
 
-y11 = 1
-y22 = 1
-for x in range (widthmap / 5):
-    Canvas.create_line(0, y11, widthmap, y22, fill = "black")
-    y11 = y11 + (widthmap / 10)
-    y22 = y22 + (widthmap / 10)
+
+def draw(houses):
+
+    Canvas = Tkinter.Canvas(window, width = 600, height = 640)
     
     
+    
+    for house in houses:
+        house.createHouse(Canvas)
 
-x11 = 1
-x22 = 1
-for x in range (widthmap / 5):
-    Canvas.create_line(x11, 0, x22, heightmap, fill = "black")
-    x11 = x11 + (widthmap / 10)
-    x22 = x22 + (widthmap / 10)
+    y11 = 1
+    y22 = 1
+    for x in range (widthmap / 5):
+        Canvas.create_line(0, y11, widthmap, y22, fill = "black")
+        y11 = y11 + (widthmap / 10)
+        y22 = y22 + (widthmap / 10)
 
-Canvas.pack()
-#Canvas.after(1000, )
+
+
+    x11 = 1
+    x22 = 1
+    for x in range (widthmap / 5):
+        Canvas.create_line(x11, 0, x22, heightmap, fill = "black")
+        x11 = x11 + (widthmap / 10)
+        x22 = x22 + (widthmap / 10)
+
+    Canvas.pack()
+    
+    
+
+max_map = None
+min_map = None
+max_val = 0
+min_val = sys.maxint
+val_arr = []
+for i in range(1000):
+    cur_map, cur_val = runSimulation(10, 10)
+    if max_val < cur_val:
+        max_val = cur_val
+        max_map = cur_map
+    if min_val > cur_val:
+        min_val = cur_val
+        min_map = cur_map
+    val_arr.append(cur_val)
+draw(max_map)
+#draw(min_map)
+print max(val_arr)
+print min(val_arr)
 window.mainloop()
 
-
-
-
+plot.hist(val_arr, bins=50)
+plot.show()
 
 
 
